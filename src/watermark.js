@@ -21,6 +21,7 @@ var Watermark = (function() {
     this.data = {
       picture: {},
       watermarks: [],
+      pending_wm: 0,
       pos: {}
     };
     // Default settings
@@ -34,24 +35,53 @@ var Watermark = (function() {
     // Sets base pìcture to work with
     setPicture: function( url_or_data ) {
       var
-        _t = this;
+        _t = this,
         $img = $('<img>');
 
       $img.on('load', function() {
         // console.log('Source picture loaded');
         _t.calculatePositions( this.width, this.height );
         _t.data.picture = _t.createCanvas( this );
-
-        $('body').append( $(_t.data.picture.canvas) );
+        // $('body').append( $(_t.data.picture.canvas) );
       }).attr('src', url_or_data);
 
-
+      return _t;
     }, // setPicture
 
-    addWatermark: function( img, position ) {
-      if (typeof postion === 'undefined') position = 'CC';
+    addWatermark: function( url_or_data, position, scale ) {
+      var
+        _t = this,
+        $img = $('<img>'),
+        wm;
 
+      _t.data.pending_wm++;
 
+      if (typeof position === 'undefined') position = [0.5, 0.5];
+      if (typeof scale === 'undefined') scale = 1;
+
+      $img.on('load', function() {
+        wm = _t.createCanvas( this );
+        var
+          w = wm.canvas.width * scale,
+          h = wm.canvas.height * scale;
+
+        _t.data.picture.ctx.drawImage(
+          wm.canvas,
+          ( _t.data.picture.canvas.width - w ) * position[0],
+          ( _t.data.picture.canvas.height - h ) * position[1],
+          w,
+          h
+        );
+
+        _t.data.pending_wm--;
+        if (_t.data.pending_wm === 0) {
+          _t.done();
+        }
+
+        // $('body').append( $(wm.canvas) );
+        // $('body').append( $(_t.data.picture.canvas) );
+      }).attr('src', url_or_data);
+      return _t;
     },
 
     createCanvas: function( img ) {
@@ -78,9 +108,27 @@ var Watermark = (function() {
       _t.LB = {}; _t.LB.x = 0;   _t.LB.y = h;
       _t.CB = {}; _t.CB.x = w/2; _t.CB.y = h;
       _t.RB = {}; _t.RB.x = w;   _t.RB.y = h;
+    }, // calculatePositions
 
-      console.log(_t);
-    } // calculatePositions
+    getCanvas: function () {
+      return this.data.picture.canvas;
+    },
+
+    getDataUrl: function ( filetype ) {
+      if ( typeof filetype === 'undefined') filetype = 'image/png';
+      return this.data.picture.canvas.toDataURL( filetype, 1.0);
+    },
+
+    getImg: function ( filetype, quality ) {
+      var
+        img = document.createElement('img');
+      img.src = this.getDataUrl( filetype, quality );
+      return img;
+    },
+
+    done: function() {
+      console.log('All watermarking done!');
+    }
 
   };
 
