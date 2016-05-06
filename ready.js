@@ -6,14 +6,16 @@ $(document).ready(function() {
   wm = new Watermark();
 
   wm
-    .setPicture('img/source-image.jpg')
-    // .addWatermark('img/wm-1.png', [0,0])
-    // .addWatermark('img/wm-2.png')
-    .addWatermark('img/wm-3.png', [1,1], 2.0);
-    // .render();
+    .setPicture('img/source-image.jpg', [400, 300])
+    .addWatermark('img/wm-1.png', [0,0])
+    .addWatermark('img/wm-2.png')
+    .addWatermark('img/wm-3.png', [1,1], 2.0)
+    .render();
 
-  wm.done = function() {
-    $('body').append( $(wm.getImg()) );
+  wm.onRenderDone = function() {
+    $('body').append( this.data.results[0].canvas );
+    $('body').append( this.data.results[1].canvas );
+    $('body').append( this.data.results[2].canvas );
   };
 
 });

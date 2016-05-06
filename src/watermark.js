@@ -19,10 +19,12 @@ var Watermark = (function() {
   function Constructor(user_settings) {
     // Internal data
     this.data = {
-      picture: {},
-      watermarks: [],
-      pending_wm: 0,
-      pos: {}
+      picture: {
+        sizes: null
+      }, // Source picture
+      results: [], // Resulting watermarker images
+      watermarks: [], // Watermarks to be applied
+      pending_watermarks: 0
     };
     // Default settings
     this.settings = {};
@@ -33,33 +35,153 @@ var Watermark = (function() {
   Constructor.prototype = {
 
     // Sets base pìcture to work with
-    setPicture: function( url_or_data ) {
+    setPicture: function( url_or_data, sizes ) {
       var
-        _t = this,
-        $img = $('<img>');
-
-      $img.on('load', function() {
-        // console.log('Source picture loaded');
-        _t.calculatePositions( this.width, this.height );
-        _t.data.picture = _t.createCanvas( this );
-        // $('body').append( $(_t.data.picture.canvas) );
-      }).attr('src', url_or_data);
-
-      return _t;
+        _t = this.data;
+      _t.picture.url = url_or_data;
+      if (typeof sizes !== 'undefined') _t.picture.sizes = sizes;
+      return this; // Chainning
     }, // setPicture
 
     addWatermark: function( url_or_data, position, scale ) {
       var
         _t = this,
-        $img = $('<img>'),
-        wm;
+        wm = {};
 
-      _t.data.pending_wm++;
+      _t.data.pending_watermarks++;
 
       if (typeof position === 'undefined') position = [0.5, 0.5];
       if (typeof scale === 'undefined') scale = 1;
 
+      wm.url = url_or_data;
+      wm.position = position;
+      wm.scale = position;
+
+      _t.data.watermarks.push( wm );
+
+      return this;
+    },
+
+    createCanvas: function( img, sx, sy, sw, sh, dx, dy, dw, dh ) {
+      var
+        objs = {};
+      objs.canvas = document.createElement('canvas');
+      objs.canvas.width = dw;
+      objs.canvas.height = dh;
+      objs.ctx = objs.canvas.getContext('2d');
+      objs.ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+      return objs;
+    }, // createCanvas
+
+    calculatePositions: function( w, h ) {
+      var pos = {};
+      pos.LT = {}; pos.LT.x = 0;   pos.LT.y = 0;
+      pos.CT = {}; pos.CT.x = w/2; pos.CT.y = 0;
+      pos.RT = {}; pos.RT.x = w;   pos.RT.y = 0;
+
+      pos.LC = {}; pos.LC.x = 0;   pos.LC.y = h/2;
+      pos.CC = {}; pos.CC.x = w/2; pos.CC.y = h/2;
+      pos.RC = {}; pos.RC.x = w;   pos.RC.y = h/2;
+
+      pos.LB = {}; pos.LB.x = 0;   pos.LB.y = h;
+      pos.CB = {}; pos.CB.x = w/2; pos.CB.y = h;
+      pos.RB = {}; pos.RB.x = w;   pos.RB.y = h;
+
+      return pos;
+    }, // calculatePositions
+
+    getCanvas: function () {
+      return this.data.picture.canvas;
+    },
+
+    getDataUrl: function ( filetype ) {
+      if ( typeof filetype === 'undefined') filetype = 'image/png';
+      // return this.data.picture.canvas.toDataURL( filetype, 1.0);
+    },
+
+    getImg: function ( filetype, quality ) {
+      var
+        img = document.createElement('img');
+      img.src = this.getDataUrl( filetype, quality );
+      return img;
+    },
+
+    render: function() {
+      var
+        _t = this,
+        $img = $('<img>');
+
       $img.on('load', function() {
+        console.log('Source picture loaded');
+        var
+          img = this,
+          // Exact copy of picture
+          picture = _t.createCanvas( img, 0, 0, img.width, img.height, 0, 0, img.width, img.height );
+        picture.pos = _t.calculatePositions( img.width, img.height );
+        _t.data.results.push( picture );
+
+        $('body').append( picture.canvas );
+
+        // Create thumbs
+        if ( _t.data.picture.sizes !== null) {
+          for (var i = 0; i < _t.data.picture.sizes.length; i++) {
+            var
+              w = _t.data.picture.sizes[i],
+              h = parseInt( (img.height / img.width) * w, 10 );
+              picture = _t.createCanvas( img, 0, 0, img.width, img.height, 0, 0, w, h );
+            picture.pos = _t.calculatePositions( w, h );
+            _t.data.results.push( picture );
+
+            // $('body').append( picture.canvas );
+            // console.log(_t.data.watermarks);
+            // console.log(w, h);
+          }
+        }
+        _t.renderWatermarks();
+      }).attr('src', _t.data.picture.url);
+    },
+
+    renderWatermarks() {
+      var
+        _t = this;
+
+      for (var i = 0; i < _t.data.watermarks.length; i++) {
+        var
+          wm = _t.data.watermarks[i],
+          $img = $('<img>');
+        $img.on('load', function() {
+
+          var
+            wm_img = this,
+            wm_obj = _t.createCanvas( wm_img, 0, 0, wm_img.width, wm_img.height, 0, 0, wm_img.width, wm_img.height ),
+            w = wm_obj.canvas.width  * wm.scale,
+            h = wm_obj.canvas.height * wm.scale;
+
+          $('body').append( wm_obj.canvas );
+
+          for (var j = 0; j < _t.data.results.length; j++) {
+            // _t.data.results[j];
+
+            _t.data.results[j].ctx.drawImage(
+              wm_obj.canvas,
+              0, //( _t.data.results[j].canvas.width - w ) * wm.position[0],
+              0, //( _t.data.results[j].canvas.height - h ) * wm.position[1],
+              w,
+              h
+            );
+          }
+          _t.data.pending_watermarks--;
+          if (_t.data.pending_watermarks === 0) {
+            _t.onRenderDone();
+          }
+        }).attr('src', wm.url);
+      }
+
+      // for (var i = 0; i < _t.data.results.length; i++) {
+      //   _t.data.results[i]
+      // }
+
+      /*$img.on('load', function() {
         wm = _t.createCanvas( this );
         var
           w = wm.canvas.width * scale,
@@ -77,56 +199,10 @@ var Watermark = (function() {
         if (_t.data.pending_wm === 0) {
           _t.done();
         }
-
-        // $('body').append( $(wm.canvas) );
-        // $('body').append( $(_t.data.picture.canvas) );
-      }).attr('src', url_or_data);
-      return _t;
+      }).attr('src', url_or_data);*/
     },
 
-    createCanvas: function( img ) {
-      var
-        objs = {};
-      objs.canvas = document.createElement('canvas');
-      objs.canvas.width = img.width;
-      objs.canvas.height = img.height;
-      objs.ctx = objs.canvas.getContext('2d');
-      objs.ctx.drawImage(img, 0, 0, img.width, img.height);
-      return objs;
-    }, // createCanvas
-
-    calculatePositions: function( w, h ) {
-      var _t = this.data.pos;
-      _t.LT = {}; _t.LT.x = 0;   _t.LT.y = 0;
-      _t.CT = {}; _t.CT.x = w/2; _t.CT.y = 0;
-      _t.RT = {}; _t.RT.x = w;   _t.RT.y = 0;
-
-      _t.LC = {}; _t.LC.x = 0;   _t.LC.y = h/2;
-      _t.CC = {}; _t.CC.x = w/2; _t.CC.y = h/2;
-      _t.RC = {}; _t.RC.x = w;   _t.RC.y = h/2;
-
-      _t.LB = {}; _t.LB.x = 0;   _t.LB.y = h;
-      _t.CB = {}; _t.CB.x = w/2; _t.CB.y = h;
-      _t.RB = {}; _t.RB.x = w;   _t.RB.y = h;
-    }, // calculatePositions
-
-    getCanvas: function () {
-      return this.data.picture.canvas;
-    },
-
-    getDataUrl: function ( filetype ) {
-      if ( typeof filetype === 'undefined') filetype = 'image/png';
-      return this.data.picture.canvas.toDataURL( filetype, 1.0);
-    },
-
-    getImg: function ( filetype, quality ) {
-      var
-        img = document.createElement('img');
-      img.src = this.getDataUrl( filetype, quality );
-      return img;
-    },
-
-    done: function() {
+    onRenderDone: function() {
       console.log('All watermarking done!');
     }
 
