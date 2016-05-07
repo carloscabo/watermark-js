@@ -55,7 +55,7 @@ var Watermark = (function() {
 
       wm.url = url_or_data;
       wm.position = position;
-      wm.scale = position;
+      wm.scale = scale;
 
       _t.data.watermarks.push( wm );
 
@@ -73,7 +73,7 @@ var Watermark = (function() {
       return objs;
     }, // createCanvas
 
-    calculatePositions: function( w, h ) {
+    /*calculatePositions: function( w, h ) {
       var pos = {};
       pos.LT = {}; pos.LT.x = 0;   pos.LT.y = 0;
       pos.CT = {}; pos.CT.x = w/2; pos.CT.y = 0;
@@ -88,7 +88,7 @@ var Watermark = (function() {
       pos.RB = {}; pos.RB.x = w;   pos.RB.y = h;
 
       return pos;
-    }, // calculatePositions
+    }, // calculatePositions*/
 
     getCanvas: function () {
       return this.data.picture.canvas;
@@ -117,7 +117,7 @@ var Watermark = (function() {
           img = this,
           // Exact copy of picture
           picture = _t.createCanvas( img, 0, 0, img.width, img.height, 0, 0, img.width, img.height );
-        picture.pos = _t.calculatePositions( img.width, img.height );
+        // picture.pos = _t.calculatePositions( img.width, img.height );
         _t.data.results.push( picture );
 
         $('body').append( picture.canvas );
@@ -129,7 +129,7 @@ var Watermark = (function() {
               w = _t.data.picture.sizes[i],
               h = parseInt( (img.height / img.width) * w, 10 );
               picture = _t.createCanvas( img, 0, 0, img.width, img.height, 0, 0, w, h );
-            picture.pos = _t.calculatePositions( w, h );
+            // picture.pos = _t.calculatePositions( w, h );
             _t.data.results.push( picture );
 
             // $('body').append( picture.canvas );
@@ -149,32 +149,40 @@ var Watermark = (function() {
         var
           wm = _t.data.watermarks[i],
           $img = $('<img>');
+
         $img.on('load', function() {
+
+          // debugger;
 
           var
             wm_img = this,
             wm_obj = _t.createCanvas( wm_img, 0, 0, wm_img.width, wm_img.height, 0, 0, wm_img.width, wm_img.height ),
-            w = wm_obj.canvas.width  * wm.scale,
-            h = wm_obj.canvas.height * wm.scale;
+            scale = $(this).data('scale'),
+            w = wm_img.width  * scale,
+            h = wm_img.height * scale,
+            position = $(this).data('position');
 
-          $('body').append( wm_obj.canvas );
+          // $('body').append( wm_obj.canvas );
+          // console.log( $(this).data('scale') );
 
           for (var j = 0; j < _t.data.results.length; j++) {
             // _t.data.results[j];
 
             _t.data.results[j].ctx.drawImage(
               wm_obj.canvas,
-              0, //( _t.data.results[j].canvas.width - w ) * wm.position[0],
-              0, //( _t.data.results[j].canvas.height - h ) * wm.position[1],
+              ( _t.data.results[j].canvas.width - w ) * position[0],
+              ( _t.data.results[j].canvas.height - h ) * position[1],
               w,
               h
             );
+
+            $('body').append( _t.data.results[j].canvas );
           }
           _t.data.pending_watermarks--;
           if (_t.data.pending_watermarks === 0) {
             _t.onRenderDone();
           }
-        }).attr('src', wm.url);
+        }).data( 'scale', wm.scale ).data( 'position', wm.position ).attr('src', wm.url);
       }
 
       // for (var i = 0; i < _t.data.results.length; i++) {

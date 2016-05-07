@@ -13,9 +13,10 @@ $(document).ready(function() {
     .render();
 
   wm.onRenderDone = function() {
-    $('body').append( this.data.results[0].canvas );
-    $('body').append( this.data.results[1].canvas );
-    $('body').append( this.data.results[2].canvas );
+    console.log('All is done!');
+    // $('body').append( this.data.results[0].canvas );
+    // $('body').append( this.data.results[1].canvas );
+    // $('body').append( this.data.results[2].canvas );
   };
 
 });
