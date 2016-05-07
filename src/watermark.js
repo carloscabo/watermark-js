@@ -43,19 +43,20 @@ var Watermark = (function() {
       return this; // Chainning
     }, // setPicture
 
-    addWatermark: function( url_or_data, position, scale ) {
+    addWatermark: function( url_or_data, user_options ) {
       var
         _t = this,
-        wm = {};
+        wm = {},
+        default_options = {
+          position: [0.5, 0.5],
+          scale: 1.0,
+          opacity: 1.0
+        };
 
       _t.data.pending_watermarks++;
 
-      if (typeof position === 'undefined') position = [0.5, 0.5];
-      if (typeof scale === 'undefined') scale = 1;
-
       wm.url = url_or_data;
-      wm.position = position;
-      wm.scale = scale;
+      wm.options = $.extend(default_options, user_options);
 
       _t.data.watermarks.push( wm );
 
@@ -72,23 +73,6 @@ var Watermark = (function() {
       objs.ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
       return objs;
     }, // createCanvas
-
-    /*calculatePositions: function( w, h ) {
-      var pos = {};
-      pos.LT = {}; pos.LT.x = 0;   pos.LT.y = 0;
-      pos.CT = {}; pos.CT.x = w/2; pos.CT.y = 0;
-      pos.RT = {}; pos.RT.x = w;   pos.RT.y = 0;
-
-      pos.LC = {}; pos.LC.x = 0;   pos.LC.y = h/2;
-      pos.CC = {}; pos.CC.x = w/2; pos.CC.y = h/2;
-      pos.RC = {}; pos.RC.x = w;   pos.RC.y = h/2;
-
-      pos.LB = {}; pos.LB.x = 0;   pos.LB.y = h;
-      pos.CB = {}; pos.CB.x = w/2; pos.CB.y = h;
-      pos.RB = {}; pos.RB.x = w;   pos.RB.y = h;
-
-      return pos;
-    }, // calculatePositions*/
 
     getCanvas: function () {
       return this.data.picture.canvas;
@@ -152,22 +136,21 @@ var Watermark = (function() {
 
         $img.on('load', function() {
 
-          // debugger;
-
           var
             wm_img = this,
             wm_obj = _t.createCanvas( wm_img, 0, 0, wm_img.width, wm_img.height, 0, 0, wm_img.width, wm_img.height ),
-            scale = $(this).data('scale'),
+            options= $(this).data('options'),
+            scale = options.scale,
+            position = options.position,
             w = wm_img.width  * scale,
-            h = wm_img.height * scale,
-            position = $(this).data('position');
+            h = wm_img.height * scale;
 
           // $('body').append( wm_obj.canvas );
           // console.log( $(this).data('scale') );
 
           for (var j = 0; j < _t.data.results.length; j++) {
             // _t.data.results[j];
-
+            _t.data.results[j].ctx.globalAlpha = options.opacity;
             _t.data.results[j].ctx.drawImage(
               wm_obj.canvas,
               ( _t.data.results[j].canvas.width - w ) * position[0],
@@ -175,14 +158,13 @@ var Watermark = (function() {
               w,
               h
             );
-
             $('body').append( _t.data.results[j].canvas );
           }
           _t.data.pending_watermarks--;
           if (_t.data.pending_watermarks === 0) {
             _t.onRenderDone();
           }
-        }).data( 'scale', wm.scale ).data( 'position', wm.position ).attr('src', wm.url);
+        }).data( 'options', wm.options ).attr('src', wm.url);
       }
 
       // for (var i = 0; i < _t.data.results.length; i++) {

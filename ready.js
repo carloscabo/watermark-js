@@ -6,10 +6,16 @@ $(document).ready(function() {
   wm = new Watermark();
 
   wm
-    .setPicture('img/source-image.jpg', [400, 300])
-    .addWatermark('img/wm-1.png', [0,0])
+    .setPicture('img/source-image.jpg', [400, 250])
+    .addWatermark('img/wm-1.png', {
+      position: [0,0]
+    })
     .addWatermark('img/wm-2.png')
-    .addWatermark('img/wm-3.png', [1,1], 2.0)
+    .addWatermark('img/wm-3.png', {
+      position: [1,1],
+      scale: 2.0,
+      opacity: 0.5
+    })
     .render();
 
   wm.onRenderDone = function() {
