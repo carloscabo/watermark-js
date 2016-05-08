@@ -6,8 +6,8 @@ function proceduralWatermark( top_text, price_int, price_float ) {
     cx = 0,
     cy = 0;
 
-  canvas.width = 84;
-  canvas.height = 84;
+  canvas.width = 100;
+  canvas.height = 100;
   cx = canvas.width / 2;
   cy = canvas.height / 2;
 
@@ -20,22 +20,21 @@ function proceduralWatermark( top_text, price_int, price_float ) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
   ctx.textBaseline = 'middle';
-  ctx.fillText(top_text, cx, 28);
+  ctx.fillText(top_text, cx, 32);
 
   ctx.font = 'Bold 30px Arial, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
   ctx.textBaseline = 'alphabetic';
   var tm = ctx.measureText(price_int); // TextMetrics
-  console.log(tm);
-  ctx.fillText(price_int, (cx - tm.width) -4 , 58);
+  ctx.fillText(price_int, (cx - tm.width) - 4 , 64);
 
   ctx.font = 'Bold 20px Arial, sans-serif';
   ctx.textAlign = 'right';
   ctx.fillStyle = '#ffffff';
   ctx.textBaseline = 'alphabetic';
   var tm = ctx.measureText( price_float); // TextMetrics
-  ctx.fillText( price_float, (cx + tm.width) -4 , 58);
+  ctx.fillText( price_float, (cx + tm.width) - 6 , 64);
 
   return canvas.toDataURL();
 }

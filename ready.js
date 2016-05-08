@@ -20,6 +20,11 @@ $(document).ready(function() {
       scale: 2.0,
       opacity: 0.5
     })
+    .addWatermark(
+      proceduralWatermark( 'DESDE', '99', ',99€')
+    ,{
+      position: [1,0]
+    })
     .render(function(){
 
       // var resulting_canvas = wm.getCanvases();
