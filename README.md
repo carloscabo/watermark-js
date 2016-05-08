@@ -138,6 +138,12 @@ my_watermarked
   }); // render callback
 ````
 
+## Utils
+````javascript
+  // Return the data-URL of image in selector
+  my_watermarked.getDataUrlFromImg( $('selector') );
+````
+
 ## TO-DO (or not ;)
 - Add vertical constraints to the thumbnails widths
 - Add a `fitWidth` to the watermark options...

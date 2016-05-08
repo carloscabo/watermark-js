@@ -1,4 +1,4 @@
-var wm;
+var my_watermarked;
 
 $(document).ready(function() {
   // La magia aquí
