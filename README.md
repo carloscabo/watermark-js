@@ -81,18 +81,20 @@ Sample usage:
 ````javascript
 // Gets all the resulting images in PNG format
 var resulting_imgs = my_watermarked.getImgs( 'image/png' );
-// Loop add them to ths <body> element
+// Add all of them to the <body> element
 $.each( resulting_imgs, function(idx, item) {
   $('body').append( $(item) );
 });
 
-// Get all the resuling data urls in Jpeg 90% quality
+// Get all the resulting data urls in Jpeg 90% quality
 var resulting_data_urls = my_watermarked.getDataUrls( 'image/jpeg', 0.9 );
 console.log(resulting_data_urls);
 ````
 
 ## Advanced usage
-As both `.setPicture()` and `.addWatermark()` accept a data-url image as parameter you can build complex / dynamic watermarks passing a functión that return data-url as parameter. Take a look to the `procedural-watermark-sample.js` included in the repo to see a sample function.
+As both `.setPicture()` and `.addWatermark()` accept a data-url image as parameter you can build complex / dynamic watermarks **passing a functión that return data-url as result**. Take a look to the `procedural-watermark-sample.js` included in the repo to see the sample function that creates the price badge .
+
+Following the demo code, with all the avaliable options.
 
 ````javascript
 my_watermarked = new Watermark();
