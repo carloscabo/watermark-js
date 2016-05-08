@@ -3,6 +3,10 @@ var wm;
 $(document).ready(function() {
   // La magia aquí
 
+  $('<img>')
+    .attr('src', proceduralWatermark( 'DESDE', '99', ',99€'))
+    .appendTo( $('body') );
+
   wm = new Watermark();
 
   wm
@@ -16,13 +20,21 @@ $(document).ready(function() {
       scale: 2.0,
       opacity: 0.5
     })
-    .render();
+    .render(function(){
 
-  wm.onRenderDone = function() {
-    console.log('All is done!');
-    // $('body').append( this.data.results[0].canvas );
-    // $('body').append( this.data.results[1].canvas );
-    // $('body').append( this.data.results[2].canvas );
-  };
+      // var resulting_canvas = wm.getCanvases();
+      // $.each( resulting_canvas, function(idx, item) {
+      //   $('body').append( $(item) );
+      // });
+
+      var resulting_imgs = wm.getImgs( 'image/png' );
+      $.each( resulting_imgs, function(idx, item) {
+        $('body').append( $(item) );
+      });
+
+      var resulting_data_urls = wm.getDataUrls( 'image/jpeg', 0.2 );
+      console.log(resulting_data_urls);
+
+    }); // render
 
 });
