@@ -1,7 +1,7 @@
 # watermark-js
 Small JS library to watermarks pictures using JS and HTML5 Canvas element.
 
-<img>
+<img src="https://github.com/carloscabo/watermark-js/raw/master/result-screen-shot.png">
 
 ## Requirements
 
@@ -93,6 +93,48 @@ console.log(resulting_data_urls);
 
 ## Advanced usage
 As both `.setPicture()` and `.addWatermark()` accept a data-url image as parameter you can build complex / dynamic watermarks passing a functión that return data-url as parameter. Take a look to the `procedural-watermark-sample.js` included in the repo to see a sample function.
+
+````javascript
+my_watermarked = new Watermark();
+
+my_watermarked
+  .setPicture('img/source-image.jpg', [400, 250])
+  .addWatermark('img/wm-1.png',
+    {
+      position: [0,0]
+    }
+  )
+  .addWatermark('img/wm-2.png')
+  .addWatermark('img/wm-3.png',
+    {
+      position: [1,1],
+      scale: 2.0,
+      opacity: 0.5
+    }
+  )
+  .addWatermark(
+    proceduralWatermark( 'DESDE', '99', ',99€'),
+    {
+      position: [1,0]
+    }
+  )
+  .render( function(){
+
+    // var resulting_canvas = wm.getCanvases();
+    // $.each( resulting_canvas, function(idx, item) {
+    //   $('body').append( $(item) );
+    // });
+
+    var resulting_imgs = my_watermarked.getImgs( 'image/png' );
+    $.each( resulting_imgs, function(idx, item) {
+      $('body').append( $(item) );
+    });
+
+    var resulting_data_urls = my_watermarked.getDataUrls( 'image/jpeg', 0.9 );
+    console.log(resulting_data_urls);
+
+  }); // render callback
+````
 
 ## TO-DO (or not ;)
 - Add vertical constraints to the thumbnails widths
