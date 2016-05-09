@@ -3,7 +3,7 @@ Small JS library to watermarks pictures using JS and HTML5 Canvas element.
 
 <img src="https://github.com/carloscabo/watermark-js/raw/master/result-screen-shot.png">
 
-**This library is primary intended for back-end usage allowing the backend users to add watermarks / badges to the images in a non-removable way (the watermarks are _rendered_ over the image itself).** In front-end there are several ways of **simulate a _watermark_** over an image without the need of using this library.
+**This library is primary intended for back-end usage, allowing the backend users to add watermarks / badges to the images in a non-removable way (the watermarks are _rendered_ over the image itself).** In front-end there are several ways of **simulate a _watermark_** over an image without the need of using this library.
 
 ## Requirements
 
