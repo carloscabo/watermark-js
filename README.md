@@ -93,6 +93,14 @@ var resulting_data_urls = my_watermarked.getDataUrls( 'image/jpeg', 0.9 );
 console.log(resulting_data_urls);
 ````
 
+## Clear watermarks
+
+Clear watermark configurations and results in case you want to make a new fresh watermark.
+
+````javascript
+.clearWatermarks();
+````
+
 ## Advanced usage
 As both `.setPicture()` and `.addWatermark()` accept a data-url image as parameter you can build complex / dynamic watermarks **passing a functión that return data-url as result**. Take a look to the `procedural-watermark-sample.js` included in the repo to see the sample function that creates the price badge .
 
