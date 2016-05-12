@@ -25,7 +25,11 @@ my_watermarked
   });
 ````
 
-## IMPORTANT: the .render() callback
+## IMPORTANT(1): CORS
+If you are going to work with uploaded images stored in a different server domain, you will need to enable CORS configuration in the third-party storage, in order to let the library work with images.
+For example, if you are using Amazon S3 storage for your images, this is the [CORS documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors).
+
+## IMPORTANT(1): The .render() callback
 <mark> The **watermarking proccess is asyncronous**, so if you want to access / use the resulting watermarked images you must do it inside the `.render()` method, passing a _callback_ function that will be executed **once the watermarking is finished**. </mark>
 
 ## Creating several watermarked thumbnails
@@ -153,11 +157,6 @@ my_watermarked
   // Return the data-URL of image in selector
   my_watermarked.getDataUrlFromImg( $('selector') );
 ````
-
-## CORS
-
-If you are going to work with uploaded images stored in a different server domain, you will need to enable CORS configuration in the third-party storage, in order to let the library work with images.
-For example, if you are using Amazon S3 storage for your images, this is the [CORS documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors).
 
 ## TO-DO (or not ;)
 - Add vertical constraints to the thumbnails widths
