@@ -26,7 +26,9 @@ my_watermarked
 ````
 
 ## IMPORTANT(1): CORS
-If you are going to work with uploaded images stored in a different server domain, you will need to enable CORS configuration in the third-party storage, in order to let the library work with images.
+If you get a message in the brower's console about **«A "tainted" canvas»**, you are trying to use images with the _CORS enabled_ [read a brief explanation at MDN](https://developer.mozilla.org/es/docs/Web/HTML/Imagen_con_CORS_habilitado).
+
+If you are going to work with uploaded **images stored in a different server domain, you will need to enable CORS configuration in the third-party storage**, in order to let the library work with images.
 For example, if you are using Amazon S3 storage for your images, this is the [CORS documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors).
 
 ## IMPORTANT(2): The .render() callback
