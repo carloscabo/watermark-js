@@ -93,6 +93,14 @@ var resulting_data_urls = my_watermarked.getDataUrls( 'image/jpeg', 0.9 );
 console.log(resulting_data_urls);
 ````
 
+## Clear watermarks
+
+Clear watermark configurations and results in case you want to make a new fresh watermark.
+
+````javascript
+.clearWatermarks();
+````
+
 ## Advanced usage
 As both `.setPicture()` and `.addWatermark()` accept a data-url image as parameter you can build complex / dynamic watermarks **passing a functión that return data-url as result**. Take a look to the `procedural-watermark-sample.js` included in the repo to see the sample function that creates the price badge .
 
@@ -145,6 +153,11 @@ my_watermarked
   // Return the data-URL of image in selector
   my_watermarked.getDataUrlFromImg( $('selector') );
 ````
+
+## CORS
+
+If you are going to work with uploaded images stored in a different server domain, you will need to enable CORS configuration in the third-party storage, in order to let the library work with images.
+For example, if you are using Amazon S3 storage for your images, this is the [CORS documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors).
 
 ## TO-DO (or not ;)
 - Add vertical constraints to the thumbnails widths
