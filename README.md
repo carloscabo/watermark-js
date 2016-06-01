@@ -25,7 +25,13 @@ my_watermarked
   });
 ````
 
-## IMPORTANT: the .render() callback
+## IMPORTANT(1): CORS
+If you get a message in the brower's console about **«A "tainted" canvas»**, you are trying to use images with the _CORS enabled_ [read a brief explanation at MDN](https://developer.mozilla.org/es/docs/Web/HTML/Imagen_con_CORS_habilitado).
+
+If you are going to work with uploaded **images stored in a different server domain, you will need to enable CORS configuration in the third-party storage**, in order to let the library work with images.
+For example, if you are using Amazon S3 storage for your images, this is the [CORS documentation](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors).
+
+## IMPORTANT(2): The .render() callback
 <mark> The **watermarking proccess is asyncronous**, so if you want to access / use the resulting watermarked images you must do it inside the `.render()` method, passing a _callback_ function that will be executed **once the watermarking is finished**. </mark>
 
 ## Creating several watermarked thumbnails
@@ -91,6 +97,14 @@ $.each( resulting_imgs, function(idx, item) {
 // Get all the resulting data urls in Jpeg 90% quality
 var resulting_data_urls = my_watermarked.getDataUrls( 'image/jpeg', 0.9 );
 console.log(resulting_data_urls);
+````
+
+## Clear watermarks
+
+Clear watermark configurations and results in case you want to make a new fresh watermark.
+
+````javascript
+.clearWatermarks();
 ````
 
 ## Advanced usage
