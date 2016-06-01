@@ -160,6 +160,10 @@ my_watermarked
   my_watermarked.getDataUrlFromImg( $('selector') );
 ````
 
+## Changelog
+  * 0.2 Avoid web browser cache issues when requesting CORS images
+  * 0.1 Initial release
+
 ## TO-DO (or not ;)
 - Add vertical constraints to the thumbnails widths
 - Add a `fitWidth` to the watermark options...
